@@ -18,10 +18,15 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const newCar = req.body;
-        const [id] = await db('cars').insert(newCar);
-        const newCarEntry = await db('cars').where({ id })
-
-        res.status(201).json(newCarEntry);
+        if (req.body.VIN && req.body.make && req.body.model && req.body.mileage) {
+            const [id] = await db('cars').insert(newCar);
+            const newCarEntry = await db('cars').where({ id })
+            res.status(201).json(newCarEntry);
+        } else {
+            res.status(400).json({
+                message: "Your car is missing a required field."
+            })
+        }
     } catch (err) {
         res.status(500).json({
             message: "There was an error creating the car."
